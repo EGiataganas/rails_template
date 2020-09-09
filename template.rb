@@ -16,6 +16,7 @@ def apply_template!
 
   after_bundle do
     create_database
+    initialize_rspec
 
     git :init unless preexisting_git_repo?
     unless any_local_git_commits?
@@ -117,6 +118,12 @@ end
 
 def any_local_git_commits?
   system('git log &> /dev/null')
+end
+
+def initialize_rspec
+  rails_command 'generate rspec:install'
+
+  apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
 end
 
 def create_database
