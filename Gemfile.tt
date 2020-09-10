@@ -11,6 +11,7 @@ gem "webpacker"<%= gemfile_requirement("webpacker") %>
 
 group :development, :test do
   gem "brakeman", require: false
+  gem "bundler-audit", require: false
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "capybara"
   gem "factory_bot_rails"
