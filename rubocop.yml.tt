@@ -1,0 +1,74 @@
+require:
+  - rubocop
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-performance
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  NewCops: enable
+  TargetRubyVersion: <%= RUBY_VERSION %>
+  Exclude:
+    - "bin/**/*"
+    - "db/migrate/*"
+    - "db/schema.rb"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
+    - "**/Rakefile"
+
+# Chain methods with trailing dots.
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Layout/HashAlignment:
+  EnforcedColonStyle:
+    - table
+    - key
+  EnforcedHashRocketStyle:
+    - table
+    - key
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - "spec/**/*"
+
+# Just indent parameters by two spaces. It's less volatile if methods change,
+# and there's less busy work lining things up.
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+# Don't allow safe assignment in conditions.
+Lint/AssignmentInCondition:
+  AllowSafeAssignment: false
+
+# Don't worry about long methods in specs.
+Metrics/MethodLength:
+  Max: 10
+  Exclude:
+    - "spec/**/*"
+
+Performance:
+  Exclude:
+    - "**/test/**/*"
+
+Rails:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Prefer sensible naming to comments everywhere.
+Style/Documentation:
+  Description: Document classes and non-namespace modules.
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+  Exclude:
+    - "spec/**/*"
+
+Style/TrivialAccessors:
+  AllowPredicates: true

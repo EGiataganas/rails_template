@@ -17,6 +17,7 @@ def apply_template!
   after_bundle do
     create_database
     initialize_rspec
+    run_rubocop_autocorrections
 
     git :init unless preexisting_git_repo?
     unless any_local_git_commits?
@@ -124,6 +125,15 @@ def initialize_rspec
   rails_command 'generate rspec:install'
 
   apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
+end
+
+def run_rubocop_autocorrections
+  template 'rubocop.yml.tt', '.rubocop.yml'
+
+  gsub_file 'config/environments/development.rb', "Rails.root.join('tmp', 'caching-dev.txt')", "Rails.root.join('tmp/caching-dev.txt')"
+
+  run 'bundle exec rubocop --auto-correct-all --disable-uncorrectable'
+  run 'bundle exec rubocop'
 end
 
 def create_database
