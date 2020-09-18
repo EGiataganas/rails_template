@@ -17,7 +17,10 @@ def apply_template!
   after_bundle do
     create_database
     initialize_rspec
+    apply 'Rakefile.rb'
+    apply 'lib/template.rb'
     run_rubocop_autocorrections
+    run 'bundle exec rake'
 
     git :init unless preexisting_git_repo?
     unless any_local_git_commits?
