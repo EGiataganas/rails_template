@@ -19,6 +19,7 @@ def apply_template!
     initialize_rspec
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
+    add_bootstrap_through_webpack
     run_rubocop_autocorrections
     run 'bundle exec rake'
 
@@ -137,6 +138,64 @@ def run_rubocop_autocorrections
 
   run 'bundle exec rubocop --auto-correct-all --disable-uncorrectable'
   run 'bundle exec rubocop'
+end
+
+# Remove Application CSS
+def add_bootstrap_through_webpack
+  # Move image directory to javascript
+  run 'mv app/assets/images app/javascript/images'
+
+  # No longer needed this template uses webpack
+  remove_file 'app/assets/'
+
+  # Install bootstrap jquery popper.js node modules
+  run 'yarn add bootstrap jquery popper.js'
+
+  # Modify environment.js
+  insert_into_file 'config/webpack/environment.js', before: 'module.exports = environment' do
+    <<~EOF
+      const webpack = require('webpack')
+
+      environment.plugins.append(
+        'Provide',
+        new webpack.ProvidePlugin({
+          $: 'jquery',
+          jQuery: 'jquery',
+          'window.jQuery': 'jquery',
+          Popper: ['popper.js', 'default']
+        })
+      )
+    EOF
+  end
+
+  # Import bootstrap
+  insert_into_file 'app/javascript/packs/application.js', before: 'require("@rails/ujs").start()' do
+    <<~EOF
+      import "bootstrap"
+      import "stylesheets/application"
+
+    EOF
+  end
+
+  gsub_file 'app/javascript/packs/application.js', "//\n// const images = require.context('../images', true)", "\nconst images = require.context('../images', true)"
+
+  gsub_file 'config/webpacker.yml', 'resolved_paths: []', 'resolved_paths: ["app/javascript/images"]'
+
+  insert_into_file 'app/javascript/packs/application.js' do
+    <<~EOF
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="popover"]').popover()
+      })
+    EOF
+  end
+
+  create_file 'app/javascript/stylesheets/application.scss'
+
+  insert_into_file 'app/javascript/stylesheets/application.scss', '@import "~bootstrap/scss/bootstrap";'
+
+  # Switch to stylesheet_pack_tag
+  gsub_file 'app/views/layouts/application.html.erb', /stylesheet_link_tag/, 'stylesheet_pack_tag'
 end
 
 def create_database
