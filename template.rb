@@ -20,6 +20,7 @@ def apply_template!
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     add_bootstrap_through_webpack
+    add_font_awesome_free if yes?('Do you want to install fontawesome-free?', :blue)
     run_rubocop_autocorrections
     run 'bundle exec rake'
 
@@ -196,6 +197,21 @@ def add_bootstrap_through_webpack
 
   # Switch to stylesheet_pack_tag
   gsub_file 'app/views/layouts/application.html.erb', /stylesheet_link_tag/, 'stylesheet_pack_tag'
+end
+
+def add_font_awesome_free
+  # Install fontawesome-free via yarn
+  run 'yarn add @fortawesome/fontawesome-free'
+
+  # Add reference to fontawesome-free to application.scss
+  insert_into_file 'app/javascript/stylesheets/application.scss' do
+    <<~EOF
+      \n@import "~@fortawesome/fontawesome-free";
+    EOF
+  end
+
+  # Import of fontawesome-free to application.js
+  insert_into_file 'app/javascript/packs/application.js', "\nimport \"@fortawesome/fontawesome-free/js/all\"", after: 'import "stylesheets/application"'
 end
 
 def create_database
