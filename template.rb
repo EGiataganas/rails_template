@@ -17,11 +17,13 @@ def apply_template!
   after_bundle do
     create_database
     initialize_rspec
+    add_users
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     add_bootstrap_through_webpack
     add_font_awesome_free if yes?('Do you want to install fontawesome-free?', :blue)
     run_rubocop_autocorrections
+    rails_command 'db:migrate'
     run 'bundle exec rake'
 
     git :init unless preexisting_git_repo?
@@ -212,6 +214,25 @@ def add_font_awesome_free
 
   # Import of fontawesome-free to application.js
   insert_into_file 'app/javascript/packs/application.js', "\nimport \"@fortawesome/fontawesome-free/js/all\"", after: 'import "stylesheets/application"'
+end
+
+def add_users
+  # Install Devise
+  rails_command 'generate devise:install'
+
+  copy_file 'config/initializers/devise.rb', force: true
+
+  # Configure Devise
+  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
+              env: 'development'
+
+  rails_command 'generate devise User first_name last_name admin:boolean'
+
+  # Set admin default to false
+  in_root do
+    migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
+    gsub_file migration, /:admin/, ':admin, default: false, null: false'
+  end
 end
 
 def create_database
