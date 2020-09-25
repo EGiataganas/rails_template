@@ -226,7 +226,8 @@ def add_users
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
               env: 'development'
 
-  rails_command 'generate devise User first_name last_name admin:boolean'
+  # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
+  run 'rails generate devise User first_name last_name admin:boolean'
 
   # Set admin default to false
   in_root do
