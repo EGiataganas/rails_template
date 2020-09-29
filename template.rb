@@ -22,6 +22,7 @@ def apply_template!
     apply 'lib/template.rb'
     add_bootstrap_through_webpack
     add_font_awesome_free if yes?('Do you want to install fontawesome-free?', :blue)
+    copy_templates
     run_rubocop_autocorrections
     rails_command 'db:migrate'
     run 'bundle exec rake'
@@ -226,6 +227,8 @@ def add_users
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
               env: 'development'
 
+  route "root to: 'home#index'"
+
   # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
   run 'rails generate devise User first_name last_name admin:boolean'
 
@@ -234,6 +237,10 @@ def add_users
     migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
     gsub_file migration, /:admin/, ':admin, default: false, null: false'
   end
+end
+
+def copy_templates
+  directory "app", force: true
 end
 
 def create_database
