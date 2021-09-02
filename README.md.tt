@@ -1,0 +1,21 @@
+# <%= app_name.capitalize %>
+
+| Dependency | Version |
+|:-----------|:--------|
+| Ruby       | <%= RUBY_VERSION %> |
+| Rails      | <%= Rails.version %> |
+
+## Getting Started
+<% if git_repo_specified? %>
+<%= num = "1." %>  Clone the project
+
+  `git clone <%= git_repo_url %>`
+<% end %>
+
+<%= num = num == "1." ? num&.next : "1." %> Install the project's dependencies using bundler
+
+  `bundle install`
+
+## Server
+
+  `rails s`
