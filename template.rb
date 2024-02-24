@@ -97,10 +97,15 @@ def assert_valid_options
   end
 end
 
-def gemfile_requirement(name)
-  @original_gemfile ||= IO.read('Gemfile')
-  req = @original_gemfile[/gem\s+['"]#{name}['"]\s*(,[><~= \t\d\.\w'"]*)?.*$/, 1]
-  req && req.gsub("'", %(")).strip.sub(/^,\s*"/, ', "')
+def gemfile_entry(name, version=nil, require: true, force: false)
+  @original_gemfile ||= IO.read("Gemfile")
+  entry = @original_gemfile[/^\s*gem #{Regexp.quote(name.inspect)}.*$/]
+  return if entry.nil? && !force
+
+  require = (entry && entry[/\brequire:\s*([\S]+)/, 1]) || require
+  version = (entry && entry[/, "([^"]+)"/, 1]) || version
+  args = [name.inspect, version&.inspect, ("require: false" if require != true)].compact
+  "gem #{args.join(", ")}\n"
 end
 
 def git_repo_specified?
