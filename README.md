@@ -6,7 +6,7 @@ This is how I setup my Rails 6 projects.
 
 This template currently works with:
 
-* Rails 6.0.x
+* Rails 7.1.x
 * Bundler 2.x
 * PostgreSQL
 * chromedriver
