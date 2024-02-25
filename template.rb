@@ -20,7 +20,6 @@ def apply_template!
     add_users
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
-    add_font_awesome_free if yes?('Do you want to install fontawesome-free?', :blue)
     copy_templates
     run_rubocop_autocorrections
     rails_command 'db:migrate'
@@ -165,21 +164,6 @@ end
 
 def any_local_git_commits?
   system('git log &> /dev/null')
-end
-
-def add_font_awesome_free
-  # Install fontawesome-free via yarn
-  run 'yarn add @fortawesome/fontawesome-free'
-
-  # Add reference to fontawesome-free to application.scss
-  insert_into_file 'app/assets/stylesheets/application.bootstrap.scss' do
-    <<~EOF
-      \n@import "~@fortawesome/fontawesome-free";
-    EOF
-  end
-
-  # Import of fontawesome-free to application.js
-  insert_into_file 'app/javascript/packs/application.js', "\nimport \"@fortawesome/fontawesome-free/js/all\"", after: 'import "stylesheets/application"'
 end
 
 def copy_templates
