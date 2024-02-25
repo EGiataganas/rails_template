@@ -1,6 +1,6 @@
 ## Description
 
-This is how I setup my Rails 6 projects.
+This is how I setup my Rails 7 projects.
 
 ## Requirements
 
