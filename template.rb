@@ -47,29 +47,6 @@ def apply_template!
   end
 end
 
-# Add this template directory to source_paths so that Thor actions like
-# copy_file and template resolve against our source files. If this file was
-# invoked remotely via HTTP, that means the files are not present locally.
-# In that case, use `git clone` to download them to a local temporary dir.
-def add_template_repository_to_source_path
-  if __FILE__ =~ %r{\Ahttps?://}
-    require 'tmpdir'
-    source_paths.unshift(tempdir = Dir.mktmpdir('rails_template-'))
-    at_exit { FileUtils.remove_entry(tempdir) }
-    git clone: [
-      '--quiet',
-      'https://github.com/EGiataganas/rails_template.git',
-      tempdir
-    ].map(&:shellescape).join(' ')
-
-    if (branch = __FILE__[%r{rails_template/(.+)/template.rb}, 1])
-      Dir.chdir(tempdir) { git checkout: branch }
-    end
-  else
-    source_paths.unshift(File.dirname(__FILE__))
-  end
-end
-
 def assert_minimum_rails_version
   requirement = Gem::Requirement.new(RAILS_REQUIREMENT)
   rails_version = Gem::Version.new(Rails::VERSION::STRING)
@@ -97,6 +74,29 @@ def assert_valid_options
   end
 end
 
+# Add this template directory to source_paths so that Thor actions like
+# copy_file and template resolve against our source files. If this file was
+# invoked remotely via HTTP, that means the files are not present locally.
+# In that case, use `git clone` to download them to a local temporary dir.
+def add_template_repository_to_source_path
+  if __FILE__ =~ %r{\Ahttps?://}
+    require 'tmpdir'
+    source_paths.unshift(tempdir = Dir.mktmpdir('rails_template-'))
+    at_exit { FileUtils.remove_entry(tempdir) }
+    git clone: [
+      '--quiet',
+      'https://github.com/EGiataganas/rails_template.git',
+      tempdir
+    ].map(&:shellescape).join(' ')
+
+    if (branch = __FILE__[%r{rails_template/(.+)/template.rb}, 1])
+      Dir.chdir(tempdir) { git checkout: branch }
+    end
+  else
+    source_paths.unshift(File.dirname(__FILE__))
+  end
+end
+
 def gemfile_entry(name, version=nil, require: true, force: false)
   @original_gemfile ||= IO.read("Gemfile")
   entry = @original_gemfile[/^\s*gem #{Regexp.quote(name.inspect)}.*$/]
@@ -108,13 +108,38 @@ def gemfile_entry(name, version=nil, require: true, force: false)
   "gem #{args.join(", ")}\n"
 end
 
-def git_repo_specified?
-  git_repo_url != 'skip' && !git_repo_url.strip.empty?
+def create_database
+  return if Dir['db/migrate/**/*.rb'].any?
+
+  rails_command 'db:create'
 end
 
-def git_repo_url
-  @git_repo_url ||=
-    ask_with_default('What is the git remote URL for this project?', :blue, 'skip')
+def initialize_rspec
+  rails_command 'generate rspec:install'
+
+  apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
+end
+
+def add_users
+  # Install Devise
+  rails_command 'generate devise:install'
+
+  copy_file 'config/initializers/devise.rb', force: true
+
+  # Configure Devise
+  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
+              env: 'development'
+
+  route "root to: 'home#index'"
+
+  # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
+  run 'rails generate devise User first_name last_name admin:boolean'
+
+  # Set admin default to false
+  in_root do
+    migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
+    gsub_file migration, /:admin/, ':admin, default: false, null: false'
+  end
 end
 
 def ask_with_default(question, color, default)
@@ -125,6 +150,15 @@ def ask_with_default(question, color, default)
   answer.to_s.strip.empty? ? default : answer
 end
 
+def git_repo_specified?
+  git_repo_url != 'skip' && !git_repo_url.strip.empty?
+end
+
+def git_repo_url
+  @git_repo_url ||=
+    ask_with_default('What is the git remote URL for this project?', :blue, 'skip')
+end
+
 def preexisting_git_repo?
   @preexisting_git_repo ||= (File.exist?('.git') || :nope)
   @preexisting_git_repo == true
@@ -132,21 +166,6 @@ end
 
 def any_local_git_commits?
   system('git log &> /dev/null')
-end
-
-def initialize_rspec
-  rails_command 'generate rspec:install'
-
-  apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
-end
-
-def run_rubocop_autocorrections
-  template 'rubocop.yml.tt', '.rubocop.yml'
-
-  gsub_file 'config/environments/development.rb', "Rails.root.join('tmp', 'caching-dev.txt')", "Rails.root.join('tmp/caching-dev.txt')"
-
-  run 'bundle exec rubocop --auto-correct-all --disable-uncorrectable'
-  run 'bundle exec rubocop'
 end
 
 # Remove Application CSS
@@ -212,7 +231,7 @@ def add_font_awesome_free
   run 'yarn add @fortawesome/fontawesome-free'
 
   # Add reference to fontawesome-free to application.scss
-  insert_into_file 'app/javascript/stylesheets/application.scss' do
+  insert_into_file 'app/assets/stylesheets/application.bootstrap.scss' do
     <<~EOF
       \n@import "~@fortawesome/fontawesome-free";
     EOF
@@ -222,36 +241,17 @@ def add_font_awesome_free
   insert_into_file 'app/javascript/packs/application.js', "\nimport \"@fortawesome/fontawesome-free/js/all\"", after: 'import "stylesheets/application"'
 end
 
-def add_users
-  # Install Devise
-  rails_command 'generate devise:install'
-
-  copy_file 'config/initializers/devise.rb', force: true
-
-  # Configure Devise
-  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
-              env: 'development'
-
-  route "root to: 'home#index'"
-
-  # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
-  run 'rails generate devise User first_name last_name admin:boolean'
-
-  # Set admin default to false
-  in_root do
-    migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
-    gsub_file migration, /:admin/, ':admin, default: false, null: false'
-  end
-end
-
 def copy_templates
   directory "app", force: true
 end
 
-def create_database
-  return if Dir['db/migrate/**/*.rb'].any?
+def run_rubocop_autocorrections
+  template 'rubocop.yml.tt', '.rubocop.yml'
 
-  rails_command 'db:create'
+  gsub_file 'config/environments/development.rb', "Rails.root.join('tmp', 'caching-dev.txt')", "Rails.root.join('tmp/caching-dev.txt')"
+
+  run 'bundle exec rubocop --auto-correct-all --disable-uncorrectable'
+  run 'bundle exec rubocop'
 end
 
 apply_template!
