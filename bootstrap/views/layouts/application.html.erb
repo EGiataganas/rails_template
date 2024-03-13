@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" data-bs-theme="auto">
+  <head>
+    <title>APP_NAME</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="d-flex flex-column h-100">
+    <%= render 'navbar' %>
+    <main class='flex-shrink-0'>
+      <div class='container'>
+        <%= yield %>
+      </div>
+    </main>
+    <%= render 'footer' %>
+  </body>
+</html>

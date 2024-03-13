@@ -135,7 +135,7 @@ def add_users
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
               env: 'development'
 
-  route "root to: 'home#index'"
+  route "root 'home#show'"
 
   # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
   run 'rails generate devise User first_name last_name admin:boolean'
@@ -196,6 +196,10 @@ def pin_and_config_js_libs
   inject_into_file 'config/importmap.rb', before: "\n" do
     "\n pin '@popperjs/core', to: 'https://unpkg.com/@popperjs/core@2.11.8/dist/esm/index.js'"
   end
+end
+
+def bootstrap_template
+  copy_file "bootstrap/views/layouts/application.html.erb", "app/views/layouts/application.html.erb", force: true
 end
 
 def run_rubocop_autocorrections
