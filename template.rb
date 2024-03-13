@@ -15,6 +15,8 @@ def apply_template!
   template 'README.md.tt', force: true
 
   after_bundle do
+    pin_and_config_js_libs
+    bootstrap_template
     create_database
     initialize_rspec
     add_users
@@ -168,6 +170,27 @@ end
 
 def copy_templates
   directory "app", force: true
+end
+
+def pin_and_config_js_libs
+  old_content_for_application = <<~JS
+    import * as bootstrap from "bootstrap"
+  JS
+
+  new_content_for_application = <<~JS
+    import './src/jquery'
+    import './src/popper'
+    import './src/bootstrap'
+    import './src/tooltip'
+  JS
+
+  gsub_file 'app/javascript/application.js', old_content_for_application, new_content_for_application
+
+  run 'bin/importmap pin jquery'
+
+  inject_into_file 'config/importmap.rb', before: "\n" do
+    "\n pin '@popperjs/core', to: 'https://unpkg.com/@popperjs/core@2.11.8/dist/esm/index.js'"
+  end
 end
 
 def run_rubocop_autocorrections
