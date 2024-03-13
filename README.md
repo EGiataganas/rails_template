@@ -63,7 +63,6 @@ The template will perform the following steps:
     * [bootstrap][] - HTML, CSS, and JavaScript framework
     * [devise][] - flexible authentication solution for user creation
     * [rubocop][] – enforces Ruby code style
-    * [simplecov][] - code coverage analysis tool
 * Security
     * [brakeman][] and [bundler-audit][] – detect security vulnerabilities
 * Testing
@@ -83,7 +82,6 @@ The template will perform the following steps:
 [rspec-rails]: https://github.com/rspec/rspec-rails
 [rubocop]:https://github.com/bbatsov/rubocop
 [selenium-webdriver]: https://github.com/SeleniumHQ/selenium/tree/trunk/rb
-[simplecov]: https://github.com/simplecov-ruby/simplecov
 
 [application templates]:http://guides.rubyonrails.org/generators.html#application-templates
 [template.rb]: template.rb
