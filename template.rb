@@ -21,6 +21,7 @@ def apply_template!
     initialize_rspec
     initialize_simple_form
     add_users
+    add_localization
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     copy_templates
@@ -200,6 +201,31 @@ end
 
 def bootstrap_template
   copy_file "bootstrap/views/layouts/application.html.erb", "app/views/layouts/application.html.erb", force: true
+end
+
+def add_localization
+  additional_settings = "
+    config.i18n.available_locales = %i[el en]
+    config.i18n.default_locale = :el
+  "
+
+  inject_into_file 'config/application.rb', after: 'config.generators.system_tests = nil' do
+    additional_settings
+  end
+
+  inject_into_file 'app/controllers/application_controller.rb', after: 'class ApplicationController < ActionController::Base' do
+    "\n include Localisation \n"
+  end
+
+  inject_into_file 'config/routes.rb', after: 'Rails.application.routes.draw do' do
+    "\n scope '(:locale)', locale: Regexp.union(I18n.available_locales.map(&:to_s)) do \n"
+  end
+
+  inject_into_file 'config/routes.rb', after: "root 'home#show'" do
+    "\n end"
+  end
+
+  copy_file 'config/locales/el.yml', force: true
 end
 
 def run_rubocop_autocorrections

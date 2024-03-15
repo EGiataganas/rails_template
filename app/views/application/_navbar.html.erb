@@ -25,6 +25,9 @@
           <li class="nav-item">
             <%= link_to "Disabled", "#", class:"nav-link disabled" %>
           </li>
+          <li class="nav-item dropdown">
+            <%= render 'change_locale' %>
+          </li>
         </ul>
         <form class="d-flex" role="search">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
