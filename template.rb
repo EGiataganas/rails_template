@@ -19,6 +19,7 @@ def apply_template!
     bootstrap_template
     create_database
     initialize_rspec
+    initialize_simple_form
     add_users
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
@@ -118,6 +119,10 @@ def initialize_rspec
   rails_command 'generate rspec:install'
 
   apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
+end
+
+def initialize_simple_form
+  rails_command 'generate simple_form:install --bootstrap'
 end
 
 def add_users

@@ -11,6 +11,7 @@ gem "jbuilder"
 <%= gemfile_entry("pg") %>
 <%= gemfile_entry("puma") %>
 gem "rails", "~> <%= Rails.version[/\d+\.\d+\.\d+/] %>"
+gem "simple_form"
 <%= gemfile_entry("sprockets-rails") %>
 <%= gemfile_entry("stimulus-rails") %>
 <%= gemfile_entry("turbo-rails") %>
