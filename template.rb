@@ -20,8 +20,8 @@ def apply_template!
     create_database
     initialize_rspec
     initialize_simple_form
-    add_users
     add_localization
+    add_users
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     copy_templates
@@ -139,13 +139,27 @@ def add_users
   route "root 'home#show'"
 
   # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
-  run 'rails generate devise User first_name last_name admin:boolean'
+  run 'rails generate devise User'
 
-  # Set admin default to false
-  in_root do
-    migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
-    gsub_file migration, /:admin/, ':admin, default: false, null: false'
+  inject_into_file 'app/controllers/application_controller.rb', after: 'class ApplicationController < ActionController::Base' do
+    "\n before_action :authenticate_user! \n"
   end
+
+  copy_file 'bootstrap/views/layouts/devise.html.erb', 'app/views/layouts/devise.html.erb', force: true
+  copy_file 'bootstrap/assets/devise.scss', 'app/assets/stylesheets/devise.scss', force: true
+
+  directory 'bootstrap/views/devise', 'app/views/devise', force: true
+
+  inject_into_file 'app/assets/stylesheets/application.bootstrap.scss', after: "@import 'bootstrap-icons/font/bootstrap-icons';" do
+    "\n\n@import 'devise'"
+  end
+
+  copy_file 'db/seeds.rb', force: true
+
+  copy_file 'config/locales/devise.el.yml', force: true
+  copy_file 'config/locales/devise.en.yml', force: true
+
+  rails_command 'db:seed'
 end
 
 def ask_with_default(question, color, default)
