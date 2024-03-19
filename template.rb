@@ -3,16 +3,18 @@ require 'shellwords'
 
 RAILS_REQUIREMENT = '~> 7.1.3'.freeze
 
+TEMPLATE_FILES = %w[
+  .ruby-version.tt
+  Gemfile.tt
+  README.md.tt
+].freeze
+
 def apply_template!
   assert_minimum_rails_version
   assert_valid_options
   add_template_repository_to_source_path
 
-  template 'ruby-version.tt', '.ruby-version', force: true
-
-  template 'Gemfile.tt', force: true
-
-  template 'README.md.tt', force: true
+  TEMPLATE_FILES.each { |file| template file, force: true}
 
   after_bundle do
     pin_and_config_js_libs
