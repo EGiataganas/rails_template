@@ -24,6 +24,7 @@ def apply_template!
     initialize_simple_form
     add_localization
     add_users
+    config_defualt_routes
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     copy_templates
@@ -138,8 +139,6 @@ def add_users
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
               env: 'development'
 
-  route "root 'home#show'"
-
   # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
   run 'rails generate devise User'
 
@@ -233,15 +232,23 @@ def add_localization
     "\n include Localisation \n"
   end
 
-  inject_into_file 'config/routes.rb', after: 'Rails.application.routes.draw do' do
-    "\n scope '(:locale)', locale: Regexp.union(I18n.available_locales.map(&:to_s)) do \n"
-  end
-
-  inject_into_file 'config/routes.rb', after: "root 'home#show'" do
-    "\n end"
-  end
-
   copy_file 'config/locales/el.yml', force: true
+end
+
+def config_defualt_routes
+  default_routes = <<~ERB
+    scope "(:locale)", locale: Regexp.union(I18n.available_locales.map(&:to_s)) do
+      root "home#show"
+
+      devise_for :users, skip: :registration, controllers: {
+        sessions: "users/sessions"
+      }
+
+      resource :dashboard, only: :show
+    end
+  ERB
+
+  gsub_file 'config/routes.rb', 'devise_for :users', default_routes
 end
 
 def run_rubocop_autocorrections
