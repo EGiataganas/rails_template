@@ -1,5 +1,12 @@
-<h1 class="mt-5">Welcome to your new application!</h1>
-<p class="lead">This has been automatically generate to quickly start your new project.</p>
+<% content_for :page_title do %>
+  <%= t("page_title") %> - <%= t(".heading") %>
+<% end %>
+
+<% add_parent_breadcrumb_link t("home_title"), root_path %>
+<% content_for  :title, t('.heading') %>
+
+<h1 class="mt-5"><%= t('.heading') %></h1>
+<p class="lead"><%= t('.paragraph') %></p>
 
 <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
   Tooltip on top

@@ -20,10 +20,10 @@ def apply_template!
     pin_and_config_js_libs
     bootstrap_application_template
     create_database
-    initialize_rspec
     initialize_simple_form
     add_localization
     add_users
+    initialize_rspec
     config_defualt_routes
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
@@ -127,6 +127,9 @@ end
 
 def initialize_simple_form
   rails_command 'generate simple_form:install --bootstrap'
+
+  copy_file 'config/locales/simple_form.el.yml', force: true
+  copy_file 'config/locales/simple_form.en.yml', force: true
 end
 
 def add_users
@@ -237,6 +240,9 @@ def add_localization
   end
 
   copy_file 'config/locales/el.yml', force: true
+  copy_file 'config/locales/en.yml', force: true
+
+  copy_file 'config/i18n-tasks.yml', force: true
 end
 
 def config_defualt_routes

@@ -1,4 +1,6 @@
-<% content_for :page_title, 'Dashboard - Demo' %>
+<% content_for :page_title do %>
+  <%= t("page_title") %> - <%= t(".sign_in") %>
+<% end %>
 
 <h1 class="h3 mb-3 fw-normal"><%= t('.sign_in') %></h1>
 

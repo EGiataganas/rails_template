@@ -6,6 +6,7 @@ ruby "<%= RUBY_VERSION %>"
 <%= gemfile_entry("bootsnap") %>
 <%= gemfile_entry("cssbundling-rails") %>
 gem "devise"
+gem "i18n-tasks"
 <%= gemfile_entry("importmap-rails") %>
 gem "jbuilder"
 <%= gemfile_entry("pg") %>

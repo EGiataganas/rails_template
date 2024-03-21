@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
   <head>
-    <title><%= content_for?(:page_title) ? yield(:page_title) : t('application_title') %></title>
+    <title><%= content_for?(:page_title) ? yield(:page_title) : t('page_title') %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

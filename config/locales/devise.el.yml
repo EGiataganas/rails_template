@@ -1,7 +1,5 @@
 ---
 el:
-  create_your_password: Δημιουργήστε τον κωδικό σας
-  create_password: Δημιουργία
   activerecord:
     attributes:
       user:
@@ -30,12 +28,17 @@ el:
         updated_at: Ενημερώθηκε
     models:
       user: Χρήστης
+  create_password: Δημιουργία
+  create_your_password: Δημιουργήστε τον κωδικό σας
   devise:
-    sign_out: Αποσύνδεση
     confirmations:
-      confirmed: Η διεύθυνση email σας επιβεβαιώθηκε επιτυχώς
-      send_instructions: Θα λάβετε ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας σε λίγα λεπτά.
-      send_paranoid_instructions: Αν η διεύθυνση email σας υπάρχει στη βάση δεδομένων μας, θα λάβετε σε λίγα λεπτά ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας.
+      new:
+        resend: Αποστολή
+        resend_confirmation_instructions: Επανάληψη αποστολής οδηγιών επιβεβαίωσης
+      user:
+        confirmed: Η διεύθυνση email σας επιβεβαιώθηκε επιτυχώς
+        send_instructions: Θα λάβετε ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας σε λίγα λεπτά.
+        send_paranoid_instructions: Αν η διεύθυνση email σας υπάρχει στη βάση δεδομένων μας, θα λάβετε σε λίγα λεπτά ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας.
     failure:
       already_authenticated: Έχετε ήδη συνδεθεί.
       inactive: Ο λογαριασμός σας δεν έχει ενεργοποιηθεί ακόμη.
@@ -46,75 +49,67 @@ el:
       timeout: Η συνεδρία σας έληξε. Παρακαλώ συνδεθείτε ξανά για να συνεχίσετε.
       unauthenticated: Πρέπει να συνδεθείτε ή να εγγραφείτε πριν συνεχίσετε.
       unconfirmed: Πρέπει να επιβεβαιώσετε τη διεύθυνση email σας πριν συνεχίσετε.
-    confirmations:
-      user:
-        confirmed: Η διεύθυνση email σας επιβεβαιώθηκε επιτυχώς
-        send_instructions: Θα λάβετε ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας σε λίγα λεπτά.
-        send_paranoid_instructions: Αν η διεύθυνση email σας υπάρχει στη βάση δεδομένων μας, θα λάβετε σε λίγα λεπτά ένα email με οδηγίες για το πώς να επιβεβαιώσετε τη διεύθυνση email σας.
-      new:
-        resend_confirmation_instructions: Επανάληψη αποστολής οδηγιών επιβεβαίωσης
-        resend: Αποστολή
     mailer:
       confirmation_instructions:
-        subject: Δημιουργία λογαριασμού στο medicalhub.io
+        action: Επιβεβαίωση του λογαριασμού μου
         greeting: Καλώς ήρθατε %{recipient}!
         instruction: 'Μπορείτε να επιβεβαιώσετε τη διεύθυνση email του λογαριασμού σας μέσω του συνδέσμου παρακάτω:'
-        action: Επιβεβαίωση του λογαριασμού μου
+        subject: Δημιουργία λογαριασμού στο medicalhub.io
       email_changed:
-        subject: Η διεύθυνση email άλλαξε
         greeting: Γεια σας %{recipient}!
-        message_unconfirmed: Επικοινωνούμε μαζί σας για να σας ειδοποιήσουμε ότι η διεύθυνση email σας αλλάζει σε %{email}.
         message: Επικοινωνούμε μαζί σας για να σας ειδοποιήσουμε ότι η διεύθυνση email σας έχει αλλάξει σε %{email}.
+        message_unconfirmed: Επικοινωνούμε μαζί σας για να σας ειδοποιήσουμε ότι η διεύθυνση email σας αλλάζει σε %{email}.
+        subject: Η διεύθυνση email άλλαξε
       password_change:
-        subject: Ο κωδικός πρόσβασης άλλαξε
         greeting: Γεια σας %{recipient}!
         message: Επικοινωνούμε μαζί σας για να σας ειδοποιήσουμε ότι ο κωδικός πρόσβασής σας έχει αλλάξει.
+        subject: Ο κωδικός πρόσβασης άλλαξε
       reset_password_instructions:
-        subject: Οδηγίες επαναφοράς κωδικού
+        action: Αλλαγή του κωδικού πρόσβασής μου
         greeting: Γεια σας %{recipient}!
         instruction: Κάποιος έχει αιτηθεί ένα σύνδεσμο για αλλαγή του κωδικού πρόσβασής σας και εσείς μπορείτε να το κάνετε αυτό μέσω του συνδέσμου παρακάτω.
         instruction_2: Αν δεν το ζητήσατε εσείς, παρακαλώ αγνοήστε αυτή το ηλεκτρ. μήνυμα.
         instruction_3: Ο κωδικός πρόσβασής σας δεν θα αλλάξει μέχρι να χρησιμοποιήσετε τον σύνδεσμο παραπάνω και δημιουργήσετε ένα νέο.
-        action: Αλλαγή του κωδικού πρόσβασής μου
+        subject: Οδηγίες επαναφοράς κωδικού
       unlock_instructions:
-        subject: Οδηγίες ξεκλειδώματος
-        greeting: Γεια σας %{recipient}!
-        message: Ο λογαριασμός σας έχει κλειδωθεί λόγω μεγάλου αριθμού ανεπιτυχών προσπαθειών σύνδεσης.
-        instruction: 'Πατήστε τον σύνδεσμο παρακάτω για να ξεκλειδώσετε τον λογαριασμό σας:'
         action: Ξεκλείδωμα του λογαριασμού μου
+        greeting: Γεια σας %{recipient}!
+        instruction: 'Πατήστε τον σύνδεσμο παρακάτω για να ξεκλειδώσετε τον λογαριασμό σας:'
+        message: Ο λογαριασμός σας έχει κλειδωθεί λόγω μεγάλου αριθμού ανεπιτυχών προσπαθειών σύνδεσης.
+        subject: Οδηγίες ξεκλειδώματος
     omniauth_callbacks:
       failure: Δεν ήταν εφικτή η ταυτοποίησή σας από %{kind} διότι "%{reason}".
       success: Ταυτοποιηθήκατε επιτυχώς από λογαριασμό %{kind}.
     passwords:
+      edit:
+        change_my_password: Αλλαγή του κωδικού πρόσβασής μου
+        change_your_password: Αλλαγή του κωδικού πρόσβασής σας
+        confirm_new_password: Επιβεβαίωση νέου κωδικού πρόσβασης
+        new_password: Νέος κωδικός πρόσβασης
+        password_hint: "%{password_length} χαρακτήρες το λιγότερο"
       new:
         forgot_password: Ξεχάσατε τον κωδικό πρόσβασής σας;
         reset_password: Αποστολή
-      edit:
-        change_your_password: Αλλαγή του κωδικού πρόσβασής σας
-        new_password: Νέος κωδικός πρόσβασης
-        password_hint: '%{password_length} χαρακτήρες το λιγότερο'
-        confirm_new_password: Επιβεβαίωση νέου κωδικού πρόσβασης
-        change_my_password: Αλλαγή του κωδικού πρόσβασής μου
       no_token: Δεν μπορείτε να προσπελάσετε αυτή τη σελίδα χωρίς να έρχεστε από email επαναφοράς κωδικού. Αν όντως έρχεστε από email επαναφοράς κωδικού, παρακαλώ επιβεβαιώστε ότι χρησιμοποιήσατε ολόκληρη τη διεύθυνση που σας δόθηκε.
       send_instructions: Θα λάβετε ένα email με οδηγίες επαναφοράς του κωδικού πρόσβασής σας σε λίγα λεπτά.
       send_paranoid_instructions: Αν η διεύθυνση email σας υπάρχει στη βάση δεδομένων μας, θα λάβετε μία διεύθυνση ανάκτησης κωδικού πρόσβασης στη διεύθυνση email σας σε λίγα λεπτά.
       updated: Ο κωδικός πρόσβασής σας άλλαξε επιτυχώς. Έχετε πλέον συνδεθεί.
       updated_not_active: Ο κωδικός πρόσβασής σας άλλαξε επιτυχώς.
     registrations:
-      new:
-        sign_up: Εγγραφή
-        password_hint: '%{password_length} χαρακτήρες το λιγότερο'
       destroyed: Αντίο! Ο λογαριασμός σας ακυρώθηκε επιτυχώς. Ελπίζουμε να σας ξαναδούμε σύντομα.
       edit:
-        title: Επεξεργασία %{resource}
-        currently_waiting_confirmation_for_email: 'Αναμένεται επιβεβαίωση για: %{email}'
-        leave_blank_if_you_don_t_want_to_change_it: αφήστε το κενό αν δεν θέλετε να το αλλάξετε
-        we_need_your_current_password_to_confirm_your_changes: χρειαζόμαστε τον τρέχων κωδικό πρόσβασής σας για να επιβεβαιώσουμε τις αλλαγές σας
-        update: Ενημέρωση
-        cancel_my_account: Ακύρωση του λογαρισμού μου
-        unhappy: Μη ευχαριστημένος/η;
         are_you_sure: Είστε σίγουρος/η;
         back: Πίσω
+        cancel_my_account: Ακύρωση του λογαρισμού μου
+        currently_waiting_confirmation_for_email: 'Αναμένεται επιβεβαίωση για: %{email}'
+        leave_blank_if_you_don_t_want_to_change_it: αφήστε το κενό αν δεν θέλετε να το αλλάξετε
+        title: Επεξεργασία %{resource}
+        unhappy: Μη ευχαριστημένος/η;
+        update: Ενημέρωση
+        we_need_your_current_password_to_confirm_your_changes: χρειαζόμαστε τον τρέχων κωδικό πρόσβασής σας για να επιβεβαιώσουμε τις αλλαγές σας
+      new:
+        password_hint: "%{password_length} χαρακτήρες το λιγότερο"
+        sign_up: Εγγραφή
       signed_up: Καλώς ήρθατε! Έχετε γραφτεί επιτυχώς.
       signed_up_but_inactive: Έχετε γραφτεί επιτυχώς. Δεν μπορέσαμε όμως να σας συνδέσουμε διότι ο λογαριασμός σας δεν είναι ακόμη ενεργοποιημένος.
       signed_up_but_locked: Έχετε γραφτεί επιτυχώς. Δεν μπορέσαμε όμως να σας συνδέσουμε διότι ο λογαριασμός σας είναι κλειδωμένος.
@@ -123,23 +118,24 @@ el:
       updated: Ο λογαριασμός σας έχει ενημερωθεί επιτυχώς.
       updated_but_not_signed_in: Ο λογαριασμός σας έχει ενημερωθεί επιτυχώς, αλλά επειδή ο κωδικός σας άλλαξε, χρειάζεται να συνδεθείτε ξανά
     sessions:
+      already_signed_out: Αποσυνδεθήκατε επιτυχώς.
       new:
         sign_in: Σύνδεση
-      already_signed_out: Αποσυνδεθήκατε επιτυχώς.
       signed_in: Συνδεθήκατε επιτυχώς.
       signed_out: Αποσυνδεθήκατε επιτυχώς.
     shared:
       links:
-        sign_in: Σύνδεση
-        sign_up: Εγγραφή
-        forgot_your_password: Ξεχάσατε τον κωδικό πρόσβασής σας;
+        back: Πίσω
         didn_t_receive_confirmation_instructions: Δεν λάβατε οδηγίες επιβεβαίωσης;
         didn_t_receive_unlock_instructions: Δεν λάβατε οδηγίες ξεκλειδώματος;
+        forgot_your_password: Ξεχάσατε τον κωδικό πρόσβασής σας;
+        sign_in: Σύνδεση
         sign_in_with_provider: Σύνδεση με %{provider}
-        back: Πίσω
+        sign_up: Εγγραφή
       minimum_password_length:
         one: "(%{count} χαρακτήρας τουλάχιστον)"
         other: "(%{count} χαρακτήρες τουλάχιστον)"
+    sign_out: Αποσύνδεση
     unlocks:
       new:
         resend_unlock_instructions: Επανάληψη αποστολής οδηγιών ξεκλειδώματος
