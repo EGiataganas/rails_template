@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="h-100" data-bs-theme="auto">
   <head>
-    <title>APP_NAME</title>
+    <title><%= content_for?(:page_title) ? yield(:page_title) : t('application_title') %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,9 +11,11 @@
   </head>
 
   <body class="d-flex flex-column h-100">
+    <%= render partial: 'shared/alerts' %>
     <%= render 'navbar' %>
     <main class='flex-shrink-0'>
       <div class='container'>
+        <%= render_navigation %>
         <%= yield %>
       </div>
     </main>

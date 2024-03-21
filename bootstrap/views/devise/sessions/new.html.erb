@@ -1,3 +1,5 @@
+<% content_for :page_title, 'Dashboard - Demo' %>
+
 <h1 class="h3 mb-3 fw-normal"><%= t('.sign_in') %></h1>
 
 <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>

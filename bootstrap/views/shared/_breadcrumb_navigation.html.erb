@@ -1,0 +1,10 @@
+<% nav.each do |n| %>
+  <li class="breadcrumb-item" aria-current="page">
+    <%= link_to n[:title], n[:path] %>
+  </li>
+<% end %>
+<% if content_for?(:title) %>
+  <li class="breadcrumb-item active" aria-current="page">
+    <%= yield :title  %>
+  </li>
+<% end %>

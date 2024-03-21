@@ -18,7 +18,7 @@ def apply_template!
 
   after_bundle do
     pin_and_config_js_libs
-    bootstrap_template
+    bootstrap_application_template
     create_database
     initialize_rspec
     initialize_simple_form
@@ -29,7 +29,7 @@ def apply_template!
     apply 'lib/template.rb'
     copy_templates
     run_rubocop_autocorrections
-    rails_command 'db:migrate'
+    rails_command 'db:migrate db:seed'
     run 'bundle exec rake'
 
     git :init unless preexisting_git_repo?
@@ -146,10 +146,7 @@ def add_users
     "\n before_action :authenticate_user! \n"
   end
 
-  copy_file 'bootstrap/views/layouts/devise.html.erb', 'app/views/layouts/devise.html.erb', force: true
-  copy_file 'bootstrap/assets/devise.scss', 'app/assets/stylesheets/devise.scss', force: true
-
-  directory 'bootstrap/views/devise', 'app/views/devise', force: true
+  bootstrap_devise_views
 
   inject_into_file 'app/assets/stylesheets/application.bootstrap.scss', after: "@import 'bootstrap-icons/font/bootstrap-icons';" do
     "\n\n@import 'devise'"
@@ -159,8 +156,6 @@ def add_users
 
   copy_file 'config/locales/devise.el.yml', force: true
   copy_file 'config/locales/devise.en.yml', force: true
-
-  rails_command 'db:seed'
 end
 
 def ask_with_default(question, color, default)
@@ -214,8 +209,17 @@ def pin_and_config_js_libs
   end
 end
 
-def bootstrap_template
-  copy_file "bootstrap/views/layouts/application.html.erb", "app/views/layouts/application.html.erb", force: true
+def bootstrap_application_template
+  directory "bootstrap/views/layouts", "app/views/layouts", force: true
+
+  directory "bootstrap/views/shared", "app/views/shared", force: true
+end
+
+def bootstrap_devise_views
+  copy_file "bootstrap/views/layouts/devise.html.erb", "app/views/layouts/devise.html.erb", force: true
+  copy_file "bootstrap/assets/devise.scss", "app/assets/stylesheets/devise.scss", force: true
+
+  directory "bootstrap/views/devise", "app/views/devise", force: true
 end
 
 def add_localization
