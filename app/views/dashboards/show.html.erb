@@ -1,0 +1,9 @@
+<% content_for :page_title do %>
+  <%= t("page_title") %> - <%= t(".heading") %>
+<% end %>
+
+<% add_parent_breadcrumb_link t("home_title"), root_path %>
+<% content_for  :title, t('.heading') %>
+
+<h1 class="mt-5"><%= t('.heading') %></h1>
+<p class="lead"><%= t('.paragraph', email: current_user.email) %></p>

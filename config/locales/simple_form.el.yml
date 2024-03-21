@@ -1,0 +1,10 @@
+---
+el:
+  simple_form:
+    error_notification:
+      default_message: 'Παρακαλώ ελέγξτε τα προβλήματα παρακάτω:'
+    'no': Όχι
+    required:
+      mark: "*"
+      text: υποχρεωτικό
+    'yes': Ναι

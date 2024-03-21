@@ -3,26 +3,33 @@ require 'shellwords'
 
 RAILS_REQUIREMENT = '~> 7.1.3'.freeze
 
+TEMPLATE_FILES = %w[
+  .ruby-version.tt
+  Gemfile.tt
+  README.md.tt
+].freeze
+
 def apply_template!
   assert_minimum_rails_version
   assert_valid_options
   add_template_repository_to_source_path
 
-  template 'ruby-version.tt', '.ruby-version', force: true
-
-  template 'Gemfile.tt', force: true
-
-  template 'README.md.tt', force: true
+  TEMPLATE_FILES.each { |file| template file, force: true}
 
   after_bundle do
+    pin_and_config_js_libs
+    bootstrap_application_template
     create_database
-    initialize_rspec
+    initialize_simple_form
+    add_localization
     add_users
+    initialize_rspec
+    config_defualt_routes
     apply 'Rakefile.rb'
     apply 'lib/template.rb'
     copy_templates
     run_rubocop_autocorrections
-    rails_command 'db:migrate'
+    rails_command 'db:migrate db:seed'
     run 'bundle exec rake'
 
     git :init unless preexisting_git_repo?
@@ -118,6 +125,13 @@ def initialize_rspec
   apply 'spec/template.rb' if yes?('Do you want to apply RSpec suggested settings?', :blue)
 end
 
+def initialize_simple_form
+  rails_command 'generate simple_form:install --bootstrap'
+
+  copy_file 'config/locales/simple_form.el.yml', force: true
+  copy_file 'config/locales/simple_form.en.yml', force: true
+end
+
 def add_users
   # Install Devise
   rails_command 'generate devise:install'
@@ -128,16 +142,23 @@ def add_users
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
               env: 'development'
 
-  route "root to: 'home#index'"
-
   # We don't use rails_command here to avoid accidentally having RAILS_ENV=development as an attribute
-  run 'rails generate devise User first_name last_name admin:boolean'
+  run 'rails generate devise User'
 
-  # Set admin default to false
-  in_root do
-    migration = Dir.glob('db/migrate/*').max_by { |f| File.mtime(f) }
-    gsub_file migration, /:admin/, ':admin, default: false, null: false'
+  inject_into_file 'app/controllers/application_controller.rb', after: 'class ApplicationController < ActionController::Base' do
+    "\n before_action :authenticate_user! \n"
   end
+
+  bootstrap_devise_views
+
+  inject_into_file 'app/assets/stylesheets/application.bootstrap.scss', after: "@import 'bootstrap-icons/font/bootstrap-icons';" do
+    "\n\n@import 'devise'"
+  end
+
+  copy_file 'db/seeds.rb', force: true
+
+  copy_file 'config/locales/devise.el.yml', force: true
+  copy_file 'config/locales/devise.en.yml', force: true
 end
 
 def ask_with_default(question, color, default)
@@ -168,6 +189,76 @@ end
 
 def copy_templates
   directory "app", force: true
+end
+
+def pin_and_config_js_libs
+  old_content_for_application = <<~JS
+    import * as bootstrap from "bootstrap"
+  JS
+
+  new_content_for_application = <<~JS
+    import './src/jquery'
+    import './src/popper'
+    import './src/bootstrap'
+    import './src/tooltip'
+  JS
+
+  gsub_file 'app/javascript/application.js', old_content_for_application, new_content_for_application
+
+  run 'bin/importmap pin jquery'
+
+  inject_into_file 'config/importmap.rb', before: "\n" do
+    "\n pin '@popperjs/core', to: 'https://unpkg.com/@popperjs/core@2.11.8/dist/esm/index.js'"
+  end
+end
+
+def bootstrap_application_template
+  directory "bootstrap/views/layouts", "app/views/layouts", force: true
+
+  directory "bootstrap/views/shared", "app/views/shared", force: true
+end
+
+def bootstrap_devise_views
+  copy_file "bootstrap/views/layouts/devise.html.erb", "app/views/layouts/devise.html.erb", force: true
+  copy_file "bootstrap/assets/devise.scss", "app/assets/stylesheets/devise.scss", force: true
+
+  directory "bootstrap/views/devise", "app/views/devise", force: true
+end
+
+def add_localization
+  additional_settings = "
+    config.i18n.available_locales = %i[el en]
+    config.i18n.default_locale = :el
+  "
+
+  inject_into_file 'config/application.rb', after: 'config.generators.system_tests = nil' do
+    additional_settings
+  end
+
+  inject_into_file 'app/controllers/application_controller.rb', after: 'class ApplicationController < ActionController::Base' do
+    "\n include Localisation \n"
+  end
+
+  copy_file 'config/locales/el.yml', force: true
+  copy_file 'config/locales/en.yml', force: true
+
+  copy_file 'config/i18n-tasks.yml', force: true
+end
+
+def config_defualt_routes
+  default_routes = <<~ERB
+    scope "(:locale)", locale: Regexp.union(I18n.available_locales.map(&:to_s)) do
+      root "home#show"
+
+      devise_for :users, skip: :registration, controllers: {
+        sessions: "users/sessions"
+      }
+
+      resource :dashboard, only: :show
+    end
+  ERB
+
+  gsub_file 'config/routes.rb', 'devise_for :users', default_routes
 end
 
 def run_rubocop_autocorrections

@@ -1,0 +1,19 @@
+---
+en:
+  copyright_html: "© %{url} YYYY"
+  dashboards:
+    show:
+      heading: Dashboard
+      paragraph: Welcome %{email}, you are signed in
+  el: Greek
+  en: English
+  english: English
+  greek: Greek
+  home:
+    show:
+      heading: Homepage
+      paragraph: This is the homepage, which does not need any authorisation
+  home_title: Home
+  navbar:
+    dashboard: Dashboard
+  page_title: Application Name

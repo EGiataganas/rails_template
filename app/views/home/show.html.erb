@@ -1,0 +1,22 @@
+<% content_for :page_title do %>
+  <%= t("page_title") %> - <%= t(".heading") %>
+<% end %>
+
+<% add_parent_breadcrumb_link t("home_title"), root_path %>
+<% content_for  :title, t('.heading') %>
+
+<h1 class="mt-5"><%= t('.heading') %></h1>
+<p class="lead"><%= t('.paragraph') %></p>
+
+<button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
+  Tooltip on top
+</button>
+<button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Tooltip on right">
+  Tooltip on right
+</button>
+<button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Tooltip on bottom">
+  Tooltip on bottom
+</button>
+<button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Tooltip on left">
+  Tooltip on left
+</button>

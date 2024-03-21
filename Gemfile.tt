@@ -6,11 +6,13 @@ ruby "<%= RUBY_VERSION %>"
 <%= gemfile_entry("bootsnap") %>
 <%= gemfile_entry("cssbundling-rails") %>
 gem "devise"
+gem "i18n-tasks"
 <%= gemfile_entry("importmap-rails") %>
 gem "jbuilder"
 <%= gemfile_entry("pg") %>
 <%= gemfile_entry("puma") %>
 gem "rails", "~> <%= Rails.version[/\d+\.\d+\.\d+/] %>"
+gem "simple_form"
 <%= gemfile_entry("sprockets-rails") %>
 <%= gemfile_entry("stimulus-rails") %>
 <%= gemfile_entry("turbo-rails") %>
@@ -27,7 +29,6 @@ group :development, :test do
   gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
   gem "selenium-webdriver"
-  gem "simplecov", require: false
 end
 
 group :development do

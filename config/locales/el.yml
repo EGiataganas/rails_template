@@ -1,0 +1,19 @@
+---
+el:
+  copyright_html: "© %{url} YYYY"
+  dashboards:
+    show:
+      heading: Πύλη
+      paragraph: Καλώς ορίσατε %{email}, έχετε συνδεθεί
+  el: Ελληνικά
+  en: Αγγλικά
+  english: Αγγλικά
+  greek: Ελληνικά
+  home:
+    show:
+      heading: Αρχική σελίδα
+      paragraph: Αυτή είναι η αρχική σελίδα, που δεν χρειάζεται καμία εξουσιοδότηση
+  home_title: Αρχική
+  navbar:
+    dashboard: Πύλη
+  page_title: Όνομα εφαρμογής
